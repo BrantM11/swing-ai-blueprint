@@ -2,7 +2,7 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LucideGolf } from '../components/icons/CustomIcons';
+import { LucideGolf } from '@/components/icons/CustomIcons';
 
 // Sample data for challenges
 const challenges = [

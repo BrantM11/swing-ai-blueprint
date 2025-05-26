@@ -3,9 +3,9 @@ import { LogOut, Settings, User } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { useToast } from '../components/ui/toast';
-import { useAuth } from '../context/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/components/ui/toast';
+import { useAuth } from '@/context/AuthContext';
 
 const UserProfile = () => {
   const { user, signOut } = useAuth();

@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LucideGolf } from '../components/icons/CustomIcons';
-import { useToast } from '../components/ui/toast';
-import { useAuth } from '../context/AuthContext';
+import { LucideGolf } from '@/components/icons/CustomIcons';
+import { useToast } from '@/components/ui/toast';
+import { useAuth } from '@/context/AuthContext';
 
 const Auth = ({ navigation }) => {
   const [isLogin, setIsLogin] = useState(true);
