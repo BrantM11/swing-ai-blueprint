@@ -1,6 +1,3 @@
-
--- Sample golf drills to add to the database
-
 -- Alignment Rod Path Drill
 INSERT INTO public.drills (
   id, title, description, overview, category, focus, difficulty, duration,

@@ -3,22 +3,34 @@
     "name": "SwingAI",
     "slug": "swing-ai-blueprint",
     "version": "1.0.0",
+    "scheme": "swingaiblueprint",
     "orientation": "portrait",
-    "platforms": ["android"],
-    "sdkVersion": "49.0.0",
     "android": {
       "package": "com.chipaway.swingai",
-      "versionCode": 4,
-      "targetSdkVersion": 34
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
     },
     "splash": {
       "backgroundColor": "#0F172A"
     },
     "icon": "./assets/icon.png",
-    "extra": {
-      "eas": {
-        "projectId": "f5b91e6f-7003-4859-a1f4-e9c25f9c2fdb"
-      }
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
