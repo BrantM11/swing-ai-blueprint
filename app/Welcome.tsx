@@ -17,9 +17,8 @@ export default function Welcome() {
         </Text>
 
         <View style={styles.actions}>
-          {/* Now the Button’s `style` prop will work because ButtonProps was updated */}
           <Button
-            onPress={() => router.push('/Dashboard')}
+            onPress={() => router.push('/Auth')}
             style={styles.button}
           >
             Get Started
@@ -55,9 +54,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   actions: {
-    width: '100%',           // OK on a View
+    width: '100%',
   },
   button: {
-    width: '100%',           // OK now that ButtonProps uses StyleProp<ViewStyle>
+    width: '100%',
   },
 });

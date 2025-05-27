@@ -3,6 +3,7 @@ import React from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LucideGolf } from '@/components/icons/CustomIcons';
+import { useRouter } from 'expo-router';
 
 // Sample data for challenges
 const challenges = [
@@ -32,8 +33,9 @@ const challenges = [
   },
 ];
 
-const ChallengeLibrary = ({ navigation }) => {
-  const getDifficultyColor = (difficulty) => {
+const ChallengeLibrary: React.FC = () => {
+  const router = useRouter();
+  const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Beginner': return '#10B981'; // green
       case 'Intermediate': return '#F59E0B'; // amber
@@ -42,7 +44,7 @@ const ChallengeLibrary = ({ navigation }) => {
     }
   };
   
-  const renderChallenge = ({ item }) => (
+  const renderChallenge = ({ item }: { item: typeof challenges[0] }) => (
     <TouchableOpacity 
       style={styles.challengeCard}
       onPress={() => navigation.navigate('ChallengeTracking', { challengeId: item.id })}

@@ -5,8 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LucideGolf } from '@/components/icons/CustomIcons';
 import { useToast } from '@/components/ui/toast';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'expo-router';
 
-const Auth = ({ navigation }) => {
+const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,13 +17,14 @@ const Auth = ({ navigation }) => {
   
   const { signIn, signUp, session } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   
   useEffect(() => {
     // Check if user is already logged in
     if (session) {
-      navigation.replace('Main');
+      router.replace('/Dashboard');
     }
-  }, [session, navigation]);
+  }, [session]);
   
   const handleSubmit = async () => {
     if (!email || !password) {
@@ -51,10 +53,18 @@ const Auth = ({ navigation }) => {
         }
         await signUp(email, password, firstName, lastName);
       }
-    } catch (error) {
+
+      router.replace('/Dashboard');
+    } catch (err: unknown) {
+      let description = 'An unexpected error occurred';
+      if (err instanceof Error) {
+        description = err.message;
+      } else if (typeof err === 'string') {
+        description = err;
+      }
       toast({
         title: isLogin ? 'Login failed' : 'Registration failed',
-        description: error.message,
+        description,
         variant: 'destructive',
       });
     } finally {

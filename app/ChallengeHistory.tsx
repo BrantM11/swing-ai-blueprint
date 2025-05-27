@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Award, TrendingUp } from 'lucide-react-native';
+import { Award } from 'lucide-react-native';
 
 const ChallengeHistory = ({ route }) => {
   const { challengeId } = route.params || { challengeId: '1' };
