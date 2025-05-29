@@ -1,41 +1,110 @@
-
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Clock, Trophy } from 'lucide-react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { supabase } from '@/integrations/supabase/client';
+import type { Challenge } from '@/types/challenge';
 
-const ChallengeTracking = ({ route, navigation }) => {
-  const { challengeId } = route.params || { challengeId: '1' };
+export default function ChallengeTracking() {
+  const router = useRouter();
+  const { id: challengeId } = useLocalSearchParams<{ id: string }>();
+
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [score, setScore] = useState('');
   const [isInProgress, setIsInProgress] = useState(false);
-  const [timer, setTimer] = useState(0);
-  
-  // Sample challenge data - in a real app this would be fetched based on challengeId
-  const challenge = {
-    id: challengeId,
-    title: 'Putting Precision',
-    description: 'Complete 10 putts from different distances with accuracy. Place markers at 3, 6, and 9 feet from the hole and attempt to make as many putts as possible.',
-    difficulty: 'Beginner',
-    totalAttempts: 10,
-    instructions: [
-      'Set up 10 balls at varying distances from the hole',
-      'Try to make as many putts as possible',
-      'Record the number of successful putts',
-      'Focus on your putting technique and consistency'
-    ]
-  };
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!challengeId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    supabase
+      .from('challenges')
+      .select(`
+        id,
+        title,
+        description,
+        difficulty,
+        totalAttempts,
+        metrics,
+        instructions
+      `)
+      .eq('id', challengeId)
+      .single()
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setChallenge(data);
+      });
+      setLoading(false);
+  }, [challengeId]);
+
+  if (!challenge) {
+    return <Text>Loading…</Text>;
+  }
   
   const startChallenge = () => {
     setIsInProgress(true);
     // Start a timer in a real app
   };
   
-  const completeChallenge = () => {
-    // In a real app, we would save the score here
-    navigation.navigate('ChallengeHistory', { challengeId });
+  const completeChallenge = async () => {
+    if (!challengeId || !challenge) return
+
+    const parsedScore = parseInt(score, 0);
+
+    const { error } = await supabase
+      .from('challenge_history')
+      .insert([{
+        challenge_id: challengeId,
+        score: parsedScore,
+      }])
+
+    if (error) {
+      console.error('Failed to save attempt:', error);
+      return
+    }
+    router.push({
+      pathname: '/ChallengeHistory',
+      params: { challengeId: challengeId },
+    });
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color="#10B981" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!challenge) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={{ color: 'white', padding: 16 }}>
+          Challenge not found.
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
+  const total =
+    challenge.totalAttempts ?? 0;
   
-  const successPercentage = score ? Math.round((parseInt(score, 10) / challenge.totalAttempts) * 100) : 0;
+  const successPercentage =
+    total > 0
+      ? Math.round((parseInt(score, 10) / total) * 100)
+      : 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,7 +122,7 @@ const ChallengeTracking = ({ route, navigation }) => {
         
         <View style={styles.instructionsCard}>
           <Text style={styles.sectionTitle}>Instructions</Text>
-          {challenge.instructions.map((instruction, index) => (
+          {challenge.instructions?.map((instruction, index) => (
             <View key={index} style={styles.instructionItem}>
               <Text style={styles.instructionNumber}>{index + 1}</Text>
               <Text style={styles.instructionText}>{instruction}</Text>
@@ -72,7 +141,7 @@ const ChallengeTracking = ({ route, navigation }) => {
             </View>
             
             <View style={styles.scoreInputSection}>
-              <Text style={styles.scoreInputLabel}>Your Score (out of {challenge.totalAttempts})</Text>
+              <Text style={styles.scoreInputLabel}>Your Score (out of {total})</Text>
               <TextInput
                 style={styles.scoreInput}
                 placeholder="Enter your score"
@@ -91,9 +160,9 @@ const ChallengeTracking = ({ route, navigation }) => {
               <TouchableOpacity 
                 style={[
                   styles.completeButton,
-                  (!score || parseInt(score, 10) > challenge.totalAttempts) && styles.disabledButton
+                  (!score || parseInt(score, 10) > total) && styles.disabledButton
                 ]}
-                disabled={!score || parseInt(score, 10) > challenge.totalAttempts}
+                disabled={!score || parseInt(score, 10) > total}
                 onPress={completeChallenge}
               >
                 <Trophy width={16} height={16} color="#FFFFFF" />
@@ -278,5 +347,3 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   }
 });
-
-export default ChallengeTracking;
